@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense & Production Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .sidebar {
+            height: calc(100vh - 64px);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Login Page -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full space-y-8 p-10 bg-white rounded-xl shadow-md">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Expense & Production Tracker
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Please sign in with your admin credentials
+                </p>
+            </div>
+            
+            <div id="login-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline" id="login-error-message"></span>
+            </div>
+            
+            <form id="login-form" class="mt-8 space-y-6">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="username" class="sr-only">Username</label>
+                        <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Username">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Sign in
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard-page" class="hidden min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-indigo-600 text-white shadow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                <h1 class="text-xl font-bold">Expense & Production Tracker</h1>
+                <div class="flex items-center space-x-4">
+                    <span id="user-welcome">Welcome, User</span>
+                    <button id="logout-btn" class="px-3 py-1 bg-indigo-700 rounded hover:bg-indigo-800 transition-colors">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="flex flex-1 flex-col md:flex-row">
+            <!-- Sidebar -->
+            <aside class="w-full md:w-64 bg-gray-100 border-r sidebar">
+                <nav class="p-4">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" class="nav-link block p-2 hover:bg-gray-200 rounded" data-page="home">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link block p-2 hover:bg-gray-200 rounded" data-page="expenses">
+                                Expenses
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link block p-2 hover:bg-gray-200 rounded" data-page="products">
+                                Products
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link block p-2 hover:bg-gray-200 rounded" data-page="production">
+                                Production
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link block p-2 hover:bg-gray-200 rounded" data-page="sales">
+                                Sales
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="flex-1 p-6 bg-gray-50 overflow-auto">
+                <!-- Home Page -->
+                <div id="home-content" class="page-content">
+                    <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Expenses Card -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h2 class="text-lg font-semibold text-gray-700">Total Expenses</h2>
+                            <p class="text-3xl font-bold mt-2" id="expenses-total">0 MAD</p>
+                            <p class="text-sm text-gray-500 mt-1"><span id="expenses-count">0</span> expense entries</p>
+                        </div>
+                        
+                        <!-- Earnings Card -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h2 class="text-lg font-semibold text-gray-700">Total Earnings</h2>
+                            <p class="text-3xl font-bold mt-2" id="earnings-total">0 MAD</p>
+                            <p class="text-sm text-gray-500 mt-1">From paid sales</p>
+                        </div>
+                        
+                        <!-- Net Profit Card -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h2 class="text-lg font-semibold text-gray-700">Net Profit</h2>
+                            <p class="text-3xl font-bold mt-2" id="net-profit">0 MAD</p>
+                            <p class="text-sm text-gray-500 mt-1">Earnings - Expenses</p>
+                        </div>
+                        
+                        <!-- Sales Card -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h2 class="text-lg font-semibold text-gray-700">Sales</h2>
+                            <p class="text-3xl font-bold mt-2" id="sales-count">0</p>
+                            <p class="text-sm text-gray-500 mt-1">Sales transactions</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <!-- Products Card -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h2 class="text-lg font-semibold text-gray-700">Products</h2>
+                            <p class="text-3xl font-bold mt-2" id="products-count">0</p>
+                            <p class="text-sm text-gray-500 mt-1">Registered products</p>
+                        </div>
+                        
+                        <!-- Production Card -->
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <h2 class="text-lg font-semibold text-gray-700">Production</h2>
+                            <p class="text-3xl font-bold mt-2" id="production-count">0</p>
+                            <p class="text-sm text-gray-500 mt-1">Production entries</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <button class="quick-action bg-indigo-600 text-white py-2 px-4 rounded text-center hover:bg-indigo-700 transition-colors" data-action="add-expense">
+                                Add Expense
+                            </button>
+                            <button class="quick-action bg-indigo-600 text-white py-2 px-4 rounded text-center hover:bg-indigo-700 transition-colors" data-action="add-product">
+                                Add Product
+                            </button>
+                            <button class="quick-action bg-indigo-600 text-white py-2 px-4 rounded text-center hover:bg-indigo-700 transition-colors" data-action="add-production">
+                                Record Production
+                            </button>
+                            <button class="quick-action bg-indigo-600 text-white py-2 px-4 rounded text-center hover:bg-indigo-700 transition-colors" data-action="add-sale">
+                                Record Sale
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expenses Page -->
+                <div id="expenses-content" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-bold">Expenses</h1>
+                        <button id="add-expense-btn" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                            Add New Expense
+                        </button>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="bg-white p-4 rounded-lg shadow mb-6">
+                        <h2 class="text-lg font-semibold mb-3">Filter Expenses</h2>
+                        <form id="expense-filter-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select id="expense-filter-category" class="w-full border border-gray-300 rounded px-3 py-2">
+                                    <option value="">All Categories</option>
+                                    <option value="Office">Office</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Supplies">Supplies</option>
+                                    <option value="Salary">Salary</option>
+                                    <option value="Equipment">Equipment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                <input type="date" id="expense-filter-start-date" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                <input type="date" id="expense-filter-end-date" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Expenses List -->
+                    <div id="expenses-loading" class="text-center py-10">Loading expenses...</div>
+                    <div id="expenses-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"></div>
+                    <div id="expenses-empty" class="hidden bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+                        No expenses found. Add your first expense!
+                    </div>
+                    <div id="expenses-table" class="hidden bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenses-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Expenses will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Products Page -->
+                <div id="products-content" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-bold">Products</h1>
+                        <button id="add-product-btn" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                            Add New Product
+                        </button>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="bg-white p-4 rounded-lg shadow mb-6">
+                        <h2 class="text-lg font-semibold mb-3">Filter Products</h2>
+                        <form id="product-filter-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Product Type</label>
+                                <select id="product-filter-type" class="w-full border border-gray-300 rounded px-3 py-2">
+                                    <option value="">All Types</option>
+                                    <option value="Type 1">Type 1</option>
+                                    <option value="Type 2">Type 2</option>
+                                    <option value="Type 3">Type 3</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Products List -->
+                    <div id="products-loading" class="text-center py-10">Loading products...</div>
+                    <div id="products-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"></div>
+                    <div id="products-empty" class="hidden bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+                        No products found. Add your first product!
+                    </div>
+                    <div id="products-table" class="hidden bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selling Price</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Products will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Production Page -->
+                <div id="production-content" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-bold">Production Records</h1>
+                        <button id="add-production-btn" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                            Add Production Record
+                        </button>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="bg-white p-4 rounded-lg shadow mb-6">
+                        <h2 class="text-lg font-semibold mb-3">Filter Production Records</h2>
+                        <form id="production-filter-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                                <select id="production-filter-product" class="w-full border border-gray-300 rounded px-3 py-2">
+                                    <option value="">All Products</option>
+                                    <!-- Products will be populated here -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                <input type="date" id="production-filter-start-date" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                <input type="date" id="production-filter-end-date" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Production List -->
+                    <div id="production-loading" class="text-center py-10">Loading production records...</div>
+                    <div id="production-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"></div>
+                    <div id="production-empty" class="hidden bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+                        No production records found. Add your first production record!
+                    </div>
+                    <div id="production-table" class="hidden bg-white rounded-lg shadow overflow-hidden">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recorded By</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="production-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Production records will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sales Page -->
+                <div id="sales-content" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-bold">Sales Records</h1>
+                        <button id="add-sale-btn" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                            Add Sale Record
+                        </button>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="bg-white p-4 rounded-lg shadow mb-6">
+                        <h2 class="text-lg font-semibold mb-3">Filter Sales Records</h2>
+                        <form id="sales-filter-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                                <select id="sales-filter-product" class="w-full border border-gray-300 rounded px-3 py-2">
+                                    <option value="">All Products</option>
+                                    <!-- Products will be populated here -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
+                                <input type="text" id="sales-filter-client" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="Search by client name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                <input type="date" id="sales-filter-start-date" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                <input type="date" id="sales-filter-end-date" class="w-full border border-gray-300 rounded px-3 py-2">
+                            </div>
+                            <div class="md:col-span-2 lg:col-span-4 flex justify-end">
+                                <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Sales List -->
+                    <div id="sales-loading" class="text-center py-10">Loading sales records...</div>
+                    <div id="sales-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"></div>
+                    <div id="sales-empty" class="hidden bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+                        No sales records found. Add your first sale record!
+                    </div>
+                    <div id="sales-table" class="hidden bg-white rounded-lg shadow overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount (MAD)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recorded By</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Sales records will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+        <div class="relative mx-auto p-5 border w-full max-w-md md:max-w-xl shadow-lg rounded-md bg-white">
+            <div id="modal-content">
+                <!-- Modal content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
